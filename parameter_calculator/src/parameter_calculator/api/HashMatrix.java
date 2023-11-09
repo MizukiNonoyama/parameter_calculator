@@ -30,6 +30,10 @@ public class HashMatrix<T> implements Matrix<T>
 		}
 	}
 	
+	public HashMatrix(Matrix<T> value) {
+		this.setMatrix(value.getMatrix());
+	}
+	
 	@Override
 	public T get(int row, int column) {
 		return matrix.get(row).get(column);
@@ -88,23 +92,21 @@ public class HashMatrix<T> implements Matrix<T>
 	}
 
 	@Override
-	public Matrix<T> getColumn(int column) {
-		Matrix<T> mat = new HashMatrix<T>();
-		mat.resizeWith(this.getRowSize(), 1, null);
+	public List<T> getColumn(int column) {
+		List<T> list = new ArrayList<T>();
 		for(int i = 0;i < this.getRowSize();i++) {
-			mat.set(i, 1, this.get(i, column));
+			list.add(this.get(i, column));
 		}
-		return mat;
+		return list;
 	}
 
 	@Override
-	public Matrix<T> getRow(int row) {
-		Matrix<T> mat = new HashMatrix<T>();
-		mat.resizeWith(1, this.getColumnSize(), null);
+	public List<T> getRow(int row) {
+		List<T> list = new ArrayList<T>();
 		for(int i = 0;i < this.getColumnSize();i++) {
-			mat.set(row, i, this.get(row, i));
+			list.add(this.get(row, i));
 		}
-		return mat;
+		return list;
 	}
 	
 	public String toString() {
@@ -128,7 +130,10 @@ public class HashMatrix<T> implements Matrix<T>
 	public void setMatrix(List<List<T>> value) {
 		this.m = value.size();
 		this.n = value.get(0).size();
-		this.matrix = value;
+		this.matrix = new ArrayList<List<T>>();
+		for(List<T> row : value) {
+			this.matrix.add(new ArrayList<T>(row));
+		}
 	}
 
 	@Override
@@ -141,5 +146,23 @@ public class HashMatrix<T> implements Matrix<T>
 			}
 		}
 		return mat;
+	}
+
+	@Override
+	public void setColumn(List<T> value, int column) {
+		if(column < this.getColumnSize() && value.size() == this.getRowSize()) {
+			for(int i = 0;i < this.getRowSize();i++) {
+				this.set(i, column, value.get(i));
+			}
+		}
+	}
+
+	@Override
+	public void setRow(List<T> value, int row) {
+		if(row < this.getRowSize() && value.size() == this.getColumnSize()) {
+			for(int i = 0;i < this.getColumnSize();i++) {
+				this.set(row, i, value.get(i));
+			}
+		}
 	}
 }

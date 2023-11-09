@@ -37,28 +37,6 @@ public class MathHelper {
 		return mat;
 	}
 	
-	public static MatrixDouble applyReLU(MatrixDouble value) {
-		MatrixDouble mat = new MatrixDouble();
-		mat.resizeWith(value.getRowSize(), value.getColumnSize(), null);
-		for(int i = 0;i < value.getRowSize();i++) {
-			for(int j = 0;j < value.getColumnSize();j++) {
-				mat.set(i, j, MathHelper.ReLU.apply(value.get(i, j)));
-			}
-		}
-		return mat;
-	}
-	
-	public static MatrixDouble applyReLUGrad(MatrixDouble value) {
-		MatrixDouble mat = new MatrixDouble();
-		mat.resizeWith(value.getRowSize(), value.getColumnSize(), null);
-		for(int i = 0;i < value.getRowSize();i++) {
-			for(int j = 0;j < value.getColumnSize();j++) {
-				mat.set(i, j, MathHelper.ReLU.applyGrad(value.get(i, j)));
-			}
-		}
-		return mat;
-	}
-	
 	public static MatrixDouble makeSumVertical(MatrixDouble value) {
 		MatrixDouble mat = new MatrixDouble();
 		mat.resizeWith(value.getRowSize(), value.getColumnSize(), null);
@@ -71,6 +49,15 @@ public class MathHelper {
 			for(int i = 0;i < value.getRowSize();i++) {
 				mat.set(i, j, total);
 			}
+		}
+		return mat;
+	}
+	
+	public static MatrixDouble cloneRowWithNewMatrix(MatrixDouble value, int row_index, int rows) {
+		MatrixDouble mat = new MatrixDouble();
+		mat.resizeWith(rows, value.getColumnSize(), null);
+		for(int i = 0;i < rows;i++) {
+			mat.setRow(value.getRow(row_index), i);
 		}
 		return mat;
 	}
@@ -108,22 +95,6 @@ public class MathHelper {
 			output[l] = value[i];
 		}
 		return output;
-	}
-	
-	public static class ReLU {
-		public static Double apply(double value) {
-			if(value <= 0) {
-				return 0.0D;
-			}
-			return value;
-		}
-		
-		public static Double applyGrad(double value) {
-			if(value <= 0) {
-				return 0.0D;
-			}
-			return 1.0D;
-		}
 	}
 	
 	public static double getStandardization(double value, double avg, double std) {

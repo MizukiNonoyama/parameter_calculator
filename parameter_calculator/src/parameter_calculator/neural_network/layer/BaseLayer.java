@@ -15,6 +15,8 @@ public abstract class BaseLayer {
 	
 	public void update(double eta) {
 		this.w = this.w.sum(this.grad_w.productToAll(eta).applyAll(Predicates.MINUS));
+		System.out.println(this.b);
+		System.out.println(this.grad_b);
 		this.b = this.b.sum(this.grad_b.productToAll(eta).applyAll(Predicates.MINUS));
 	}
 	

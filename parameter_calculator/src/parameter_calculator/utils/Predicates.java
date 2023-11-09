@@ -28,6 +28,40 @@ public class Predicates {
 		@Override
 		public Double apply(Double value) {
 			return Math.pow(value,2);
+		}
+	};
+	
+	public static final Predicate<Double> RELU = new Predicate<Double>() {
+		@Override
+		public Double apply(Double value) {
+			if(value <= 0) {
+				return 0.0D;
+			}
+			return value;
+		}	
+	};
+	
+	public static final Predicate<Double> RELU_GRAD = new Predicate<Double>() {
+		@Override
+		public Double apply(Double value) {
+			if(value <= 0) {
+				return 0.0D;
+			}
+			return 1.0;
+		}	
+	};
+	
+	public static final Predicate<Double> TANH = new Predicate<Double>() {
+		@Override
+		public Double apply(Double value) {
+			return Math.tanh(value);
+		}	
+	};
+	
+	public static final Predicate<Double> TANH_GRAD = new Predicate<Double>() {
+		@Override
+		public Double apply(Double value) {
+			return 1 / (Math.cosh(value) * Math.cosh(value));
 		}	
 	};
 }
