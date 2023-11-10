@@ -6,6 +6,10 @@ public class MatrixDouble extends MatrixNumber<Double>
 		super();
 	}
 	
+	public MatrixDouble(MatrixDouble value) {
+		super(value);
+	}
+	
 	public MatrixDouble(Double[][] value) {
 		super(value);
 	} 

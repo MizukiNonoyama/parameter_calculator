@@ -29,10 +29,17 @@ public class DataUtils {
 				}
 			}
 			Parameters param = inputFromFile.get(index + Config.sample_cycle + Config.vision_delay_cycle - 1);
-			if(!invalid && param != null) result.add(new Sample(param, list));	
+			if(!invalid && param != null && !isZero(param)) result.add(new Sample(param, list));	
 			index++;
 		}
 		return result;
+	}
+	
+	private static boolean isZero(Parameters param) {
+		return param.getParam()[0] == 0.0 && param.getParam()[1] == 0.0 && param.getParam()[2] == 0.0 && 
+				-5 < param.getVX() && param.getVX() < 5 &&
+				-5 < param.getVY() && param.getVY() < 5 &&
+				-5 < param.getOmega() && param.getOmega() < 5;
 	}
 	
 	public static DataGaussian makeGaussian(List<Sample> sampleAll) {
@@ -77,7 +84,7 @@ public class DataUtils {
 				if(start_row_index <= rows) {
 					String[] splitted = str.split(splitter,0);
 					try {
-						list.add(new Parameters(Double.valueOf(splitted[command_vx_index]),Double.valueOf(splitted[command_vy_index]),Double.valueOf(splitted[command_omega_index]),Double.valueOf(splitted[actual_vx_index]),Double.valueOf(splitted[actual_vy_index]),Double.valueOf(splitted[actual_omega_index])));
+						list.add(new Parameters(Double.valueOf(splitted[command_vx_index]),Double.valueOf(splitted[command_vy_index]),Double.valueOf(splitted[command_omega_index]) * Config.robot_marker_radius,Double.valueOf(splitted[actual_vx_index]),Double.valueOf(splitted[actual_vy_index]),Double.valueOf(splitted[actual_omega_index]) * Config.robot_marker_radius));
 					} catch(NumberFormatException e) {
 						list.add(null);
 					}

@@ -23,26 +23,26 @@ public class Processor {
 		this.layers = new BaseLayer[] {
 				new MiddleLayer(Config.data_horizontal_size * 
 						Config.data_vertical_size, Config.neuron_middle_size),
-				new MiddleLayer(Config.neuron_middle_size, Config.neuron_middle_size),
+				//new MiddleLayer(Config.neuron_middle_size, Config.neuron_middle_size),
 				new OutputLayer(Config.neuron_middle_size, Config.neuron_output_size)
 		};
 		this.samples = new ArrayList<Sample>(samples);
 	}
 	
 	public MatrixDouble forward_propagation(MatrixDouble x) {
-		MatrixDouble k = x;
+		MatrixDouble k = new MatrixDouble(x);
 		for(BaseLayer layer : this.layers) {
 			layer.forward(k);
-			k = layer.y;
+			k = new MatrixDouble(layer.y);
 		}
 		return k;
 	}
 	
 	public MatrixDouble back_propagation(MatrixDouble t) {
-		MatrixDouble grad_y = t;
+		MatrixDouble grad_y = new MatrixDouble(t);
 		for(BaseLayer layer : MathHelper.reverse(this.layers)) {
 			layer.backward(grad_y);
-			grad_y = layer.grad_x;
+			grad_y = new MatrixDouble(layer.grad_x);
 		}
 		return grad_y;
 	}
@@ -55,7 +55,8 @@ public class Processor {
 	
 	public double getError(MatrixDouble x, MatrixDouble t) {
 		MatrixDouble y = this.forward_propagation(x);
-		return MathHelper.sumAll(y.sum(t.applyAll(Predicates.MINUS)).applyAll(Predicates.SQUARE));
+		System.out.println(y + " : " + t);
+		return MathHelper.sumAll(y.sum(t.applyAll(Predicates.MINUS)).applyAll(Predicates.SQUARE)) / 2.0;
 	}
 	
 	public void process() {
@@ -91,16 +92,18 @@ public class Processor {
 			MatrixDouble t_error_train = new MatrixDouble();
 			x_error_train.resizeWith(1, Config.data_horizontal_size * Config.data_vertical_size, null);
 			t_error_train.resizeWith(1, Config.neuron_output_size, null);
-			x_error_train.setRow(sampleTrain.get(indexes.get(0)).getInput(), 0);
-			t_error_train.setRow(sampleTrain.get(indexes.get(0)).getOutput(),0);
+			int i = indexes.get(0);
+			x_error_train.setRow(sampleTrain.get(i).getInput(), 0);
+			t_error_train.setRow(sampleTrain.get(i).getOutput(),0);
 			System.out.println("Train : " + this.getError(x_error_train, t_error_train));
 			
 			MatrixDouble x_error_test = new MatrixDouble();
 			MatrixDouble t_error_test = new MatrixDouble();
 			x_error_test.resizeWith(1, Config.data_horizontal_size * Config.data_vertical_size, null);
 			t_error_test.resizeWith(1, Config.neuron_output_size, null);
-			x_error_test.setRow(sampleTest.get(0).getInput(), 0);
-			t_error_test.setRow(sampleTest.get(0).getOutput(),0);
+			int j = MathHelper.RAND.nextInt(sampleTest.size());
+			x_error_test.setRow(sampleTest.get(j).getInput(), 0);
+			t_error_test.setRow(sampleTest.get(j).getOutput(),0);
 			System.out.println("Test : " + this.getError(x_error_test, t_error_test));
 		}
 	}

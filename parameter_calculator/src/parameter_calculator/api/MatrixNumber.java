@@ -10,6 +10,10 @@ public abstract class MatrixNumber<T> extends HashMatrix<T>
 		super(value);
 	} 
 	
+	public MatrixNumber(MatrixNumber<T> value) {
+		super(value);
+	} 
+	
 	protected abstract T sum(T a,T b);
 	
 	protected abstract T product(T a,T b);

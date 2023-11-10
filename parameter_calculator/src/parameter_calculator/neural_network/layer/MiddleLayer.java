@@ -7,7 +7,7 @@ import parameter_calculator.utils.Predicates;
 public class MiddleLayer extends BaseLayer {
 	
 	public MiddleLayer(int n_upper,int n_self) {
-		this.w = (MatrixDouble) MathHelper.randGaussianMatrix(n_upper, n_self).productToAll(Math.sqrt(2 / n_upper));
+		this.w = (MatrixDouble) MathHelper.randGaussianMatrix(n_upper, n_self).productToAll(Math.sqrt(2.0 / n_upper));
 		this.b = (MatrixDouble) MathHelper.zeroMatrix(1, n_self);
 	}
 	
@@ -15,11 +15,11 @@ public class MiddleLayer extends BaseLayer {
 		this.x = x;
 		MatrixDouble xw = this.x.dot(this.w);
 		this.u = xw.sum(MathHelper.cloneRowWithNewMatrix(this.b, 0, xw.getRowSize()));
-		this.y = this.u.applyAll(Predicates.RELU);
+		this.y = this.u.applyAll(Predicates.TANH);
 	}
 	
 	public void backward(MatrixDouble grad_y) {
-		MatrixDouble delta = this.u.applyAll(Predicates.RELU_GRAD).product(grad_y);
+		MatrixDouble delta = this.u.applyAll(Predicates.TANH_GRAD).product(grad_y);
 		this.grad_w = this.x.transform().dot(delta);
 		this.grad_b = MathHelper.cloneRowWithNewMatrix(MathHelper.makeSumVertical(delta), 0, 1);
 		this.grad_x = delta.dot(this.w.transform());

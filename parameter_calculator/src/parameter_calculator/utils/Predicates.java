@@ -1,6 +1,7 @@
 package parameter_calculator.utils;
 
 import parameter_calculator.api.Predicate;
+import parameter_calculator.config.Config;
 
 public class Predicates {
 	public static final Predicate<Double> MINUS = new Predicate<Double>() {
@@ -54,14 +55,14 @@ public class Predicates {
 	public static final Predicate<Double> TANH = new Predicate<Double>() {
 		@Override
 		public Double apply(Double value) {
-			return Math.tanh(value);
+			return Math.tanh(value / Config.c);
 		}	
 	};
 	
 	public static final Predicate<Double> TANH_GRAD = new Predicate<Double>() {
 		@Override
 		public Double apply(Double value) {
-			return 1 / (Math.cosh(value) * Math.cosh(value));
+			return 1.0 / (Math.cosh(value / Config.c) * Math.cosh(value / Config.c) * Config.c);
 		}	
 	};
 }
