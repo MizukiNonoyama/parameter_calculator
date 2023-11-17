@@ -20,7 +20,7 @@ public class DataUtils {
 		if(inputFromFile.size() < Config.sample_cycle + Config.vision_delay_cycle) return result;
 		int index = 0;
 		while(Config.sample_cycle + Config.vision_delay_cycle + index <= inputFromFile.size()) {
-			List<Parameters> list = new ArrayList<Parameters>(inputFromFile.subList(index, Config.sample_cycle + index));
+			List<Parameters> list = new ArrayList<Parameters>(inputFromFile.subList(index, Config.sample_cycle + index + Config.vision_delay_cycle - 1));
 			boolean invalid = false;
 			for(Parameters param : list) {
 				if(param == null) { 
@@ -29,7 +29,7 @@ public class DataUtils {
 				}
 			}
 			Parameters param = inputFromFile.get(index + Config.sample_cycle + Config.vision_delay_cycle - 1);
-			if(!invalid && param != null && !isZero(param)) result.add(new Sample(param, list));	
+			if(!invalid && param != null) result.add(new Sample(param, list));	
 			index++;
 		}
 		return result;
@@ -48,10 +48,13 @@ public class DataUtils {
 			allValues.add(sample.getOmega());
 			allValues.add(sample.getVX());
 			allValues.add(sample.getVY());
-			for(Parameters params : sample.getArray()) {
-				allValues.add(params.getParam()[0]);
-				allValues.add(params.getParam()[1]);
-				allValues.add(params.getParam()[2]);
+			for(int i = 0;i < sample.getArray().size() - Config.vision_delay_cycle + 1;i++) {
+				allValues.add(sample.getArray().get(i).getParam()[0]);
+				allValues.add(sample.getArray().get(i).getParam()[1]);
+				allValues.add(sample.getArray().get(i).getParam()[2]);
+				allValues.add(sample.getArray().get(i + Config.vision_delay_cycle - 1).getOmega());
+				allValues.add(sample.getArray().get(i + Config.vision_delay_cycle - 1).getVX());
+				allValues.add(sample.getArray().get(i + Config.vision_delay_cycle - 1).getVY());
 			}
 		}
 		
@@ -62,10 +65,13 @@ public class DataUtils {
 		List<SampleGaussian> list = new ArrayList<SampleGaussian>();
 		for(Sample sample : sampleAll) {
 			List<Double> inputs = new ArrayList<Double>();
-			for(Parameters params : sample.getArray()) {
-				inputs.add(MathHelper.getStandardization(params.getParam()[0],avg,std));
-				inputs.add(MathHelper.getStandardization(params.getParam()[1],avg,std));
-				inputs.add(MathHelper.getStandardization(params.getParam()[2],avg,std));
+			for(int i = 0;i < sample.getArray().size() - Config.vision_delay_cycle + 1;i++) {
+				inputs.add(MathHelper.getStandardization(sample.getArray().get(i).getParam()[0],avg,std));
+				inputs.add(MathHelper.getStandardization(sample.getArray().get(i).getParam()[1],avg,std));
+				inputs.add(MathHelper.getStandardization(sample.getArray().get(i).getParam()[2],avg,std));
+				inputs.add(MathHelper.getStandardization(sample.getArray().get(i + Config.vision_delay_cycle - 1).getVX(),avg,std));
+				inputs.add(MathHelper.getStandardization(sample.getArray().get(i + Config.vision_delay_cycle - 1).getVY(),avg,std));
+				inputs.add(MathHelper.getStandardization(sample.getArray().get(i + Config.vision_delay_cycle - 1).getOmega(),avg,std));
 			}
 			list.add(new SampleGaussian(MathHelper.getStandardization(sample.getVX(),avg,std),
 					MathHelper.getStandardization(sample.getVY(),avg,std),
