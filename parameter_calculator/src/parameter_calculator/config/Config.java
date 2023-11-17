@@ -25,5 +25,9 @@ public class Config {
 	
 	public static double eta = 0.001;
 	
+	public static double getEta(int epoch) {
+		return 0.1 / Math.sqrt(epoch) + 0.01;
+	}
+	
 	public static double c = 15.0;
 }

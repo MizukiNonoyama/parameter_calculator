@@ -52,9 +52,9 @@ public class Processor {
 		return grad_y;
 	}
 	
-	public void update_params() {
+	public void update_params(int epoch) {
 		for(BaseLayer layer : this.layers) {
-			layer.update(Config.eta);
+			layer.update(Config.getEta(epoch));
 		}
 	}
 	
@@ -90,7 +90,7 @@ public class Processor {
 				this.forward_propagation(x_md);
 				this.back_propagation(t_md);
 				
-				this.update_params();
+				this.update_params(epoch + 1);
 			}
 			
 			MatrixDouble x_error_train = new MatrixDouble();
