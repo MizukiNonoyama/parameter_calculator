@@ -65,4 +65,34 @@ public class Predicates {
 			return 1.0 / (Math.cosh(value / Config.c) * Math.cosh(value / Config.c) * Config.c);
 		}	
 	};
+	
+	public static final Predicate<Double> LN = new Predicate<Double>() {
+		@Override
+		public Double apply(Double value) {
+			return MathHelper.copySign(value) * Math.log(Math.abs(value) / Config.c + 1);
+		}	
+	};
+	
+	public static final Predicate<Double> LN_GRAD = new Predicate<Double>() {
+		@Override
+		public Double apply(Double value) {
+			return 1 / (Math.abs(value) + Config.c);
+		}	
+	};
+	
+	public static final Predicate<Double> ASINH = new Predicate<Double>() {
+		@Override
+		public Double apply(Double value) {
+			double x = value / Config.d;
+			return Math.log(x + Math.sqrt(x * x + 1));
+		}	
+	};
+	
+	public static final Predicate<Double> ASINH_GRAD = new Predicate<Double>() {
+		@Override
+		public Double apply(Double value) {
+			double x = value / Config.d;
+			return (x + Math.sqrt(x * x + 1)) / (x * x + x * Math.sqrt(x * x + 1) + 1) / Config.d;
+		}	
+	};
 }

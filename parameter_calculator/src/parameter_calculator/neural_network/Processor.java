@@ -105,7 +105,7 @@ public class Processor {
 			if(!this.gui.getPlot().hasData("Train")) {
 				this.gui.getPlot().setData("Train", new PlotData(new ArrayList<Pair<Double,Double>>(), 0xAA0000, true));
 			}
-			this.gui.getPlot().getData("Train").getData().add(new Pair<Double,Double>((double)epoch, error_train));
+			this.gui.getPlot().getData("Train").getData().add(new Pair<Double,Double>((double)(epoch + 1), error_train));
 			
 			MatrixDouble x_error_test = new MatrixDouble();
 			MatrixDouble t_error_test = new MatrixDouble();
@@ -119,7 +119,7 @@ public class Processor {
 			if(!this.gui.getPlot().hasData("Test")) {
 				this.gui.getPlot().setData("Test", new PlotData(new ArrayList<Pair<Double,Double>>(), 0x00AA00, true));
 			}
-			this.gui.getPlot().getData("Test").getData().add(new Pair<Double,Double>((double)epoch, error_test));
+			this.gui.getPlot().getData("Test").getData().add(new Pair<Double,Double>((double)(epoch + 1), error_test));
 			this.gui.getPlot().setMaxX(epoch + 10);
 			this.gui.getPlot().setScaleX((double)(epoch + 10) / 5.0);
 			this.gui.repaint();

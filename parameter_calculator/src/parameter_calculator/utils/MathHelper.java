@@ -138,4 +138,8 @@ public class MathHelper {
 		}
 		return list;
 	}
+	
+	public static double copySign(double value) {
+		return value < 0.0 ? -1 : 1;
+	}
 }

@@ -15,7 +15,7 @@ public class Config {
 	public static int data_vertical_size = sample_cycle;
 	public static int data_horizontal_size = 6;
 	
-	public static int neuron_middle_size = 100;
+	public static int neuron_middle_size = 16;
 	public static int neuron_output_size = 3;
 	
 	public static double ratio_test = 0.25;
@@ -26,8 +26,9 @@ public class Config {
 	public static double eta = 0.001;
 	
 	public static double getEta(int epoch) {
-		return 0.1 / Math.sqrt(epoch) + 0.01;
+		return 0.05 / Math.sqrt((double)epoch / 10.0 + 1.0) + 0.001;
 	}
 	
 	public static double c = 15.0;
+	public static double d = 5.0;
 }

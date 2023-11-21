@@ -15,13 +15,13 @@ public class OutputLayer extends BaseLayer {
 		this.x = x;
 		MatrixDouble xw = this.x.dot(this.w);
 		this.u = xw.sum(MathHelper.cloneRowWithNewMatrix(this.b, 0, xw.getRowSize()));
-		this.y = this.u.applyAll(Predicates.TANH);
+		this.y = this.u.applyAll(Predicates.ASINH);
 	}
 	
 	public void backward(MatrixDouble t) {
 		MatrixDouble ones = new MatrixDouble();
 		ones.resizeWith(t.getRowSize(), t.getColumnSize(), 1.0D);
-		MatrixDouble delta = this.y.sum(t.applyAll(Predicates.MINUS)).product(ones.sum(this.y.applyAll(Predicates.SQUARE).applyAll(Predicates.MINUS)).productToAll(1.0 / Config.c));
+		MatrixDouble delta = this.y.sum(t.applyAll(Predicates.MINUS)).product(this.u.applyAll(Predicates.ASINH_GRAD));
 		this.grad_w = this.x.transform().dot(delta);
 		this.grad_b = MathHelper.cloneRowWithNewMatrix(MathHelper.makeSumVertical(delta), 0, 1);
 		this.grad_x = delta.dot(this.w.transform());
