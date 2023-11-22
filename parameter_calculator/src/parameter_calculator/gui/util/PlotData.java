@@ -1,7 +1,6 @@
 package parameter_calculator.gui.util;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.List;
 
 import parameter_calculator.api.Pair;

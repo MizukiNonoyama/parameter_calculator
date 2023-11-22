@@ -1,7 +1,6 @@
 package parameter_calculator.neural_network.layer;
 
 import parameter_calculator.api.MatrixDouble;
-import parameter_calculator.config.Config;
 import parameter_calculator.utils.MathHelper;
 import parameter_calculator.utils.Predicates;
 

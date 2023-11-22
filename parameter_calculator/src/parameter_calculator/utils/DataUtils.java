@@ -15,12 +15,15 @@ import parameter_calculator.data.Sample;
 import parameter_calculator.data.SampleGaussian;
 
 public class DataUtils {
+	
+	private static int sample_offset = 0;//Config.vision_delay_cycle - 1;
+	
 	private static List<Sample> makeSamples(List<Parameters> inputFromFile) {
 		List<Sample> result = new ArrayList<Sample>();
 		if(inputFromFile.size() < Config.sample_cycle + Config.vision_delay_cycle) return result;
 		int index = 0;
 		while(Config.sample_cycle + Config.vision_delay_cycle + index <= inputFromFile.size()) {
-			List<Parameters> list = new ArrayList<Parameters>(inputFromFile.subList(index, Config.sample_cycle + index + Config.vision_delay_cycle - 1));
+			List<Parameters> list = new ArrayList<Parameters>(inputFromFile.subList(index, Config.sample_cycle + index + sample_offset));
 			boolean invalid = false;
 			for(Parameters param : list) {
 				if(param == null) { 
@@ -35,7 +38,7 @@ public class DataUtils {
 		return result;
 	}
 	
-	private static boolean isZero(Parameters param) {
+	public static boolean isZero(Parameters param) {
 		return param.getParam()[0] == 0.0 && param.getParam()[1] == 0.0 && param.getParam()[2] == 0.0 && 
 				-5 < param.getVX() && param.getVX() < 5 &&
 				-5 < param.getVY() && param.getVY() < 5 &&
@@ -48,13 +51,13 @@ public class DataUtils {
 			allValues.add(sample.getOmega());
 			allValues.add(sample.getVX());
 			allValues.add(sample.getVY());
-			for(int i = 0;i < sample.getArray().size() - Config.vision_delay_cycle + 1;i++) {
+			for(int i = 0;i < sample.getArray().size() - sample_offset;i++) {
 				allValues.add(sample.getArray().get(i).getParam()[0]);
 				allValues.add(sample.getArray().get(i).getParam()[1]);
 				allValues.add(sample.getArray().get(i).getParam()[2]);
-				allValues.add(sample.getArray().get(i + Config.vision_delay_cycle - 1).getOmega());
-				allValues.add(sample.getArray().get(i + Config.vision_delay_cycle - 1).getVX());
-				allValues.add(sample.getArray().get(i + Config.vision_delay_cycle - 1).getVY());
+				allValues.add(sample.getArray().get(i + sample_offset).getOmega());
+				allValues.add(sample.getArray().get(i + sample_offset).getVX());
+				allValues.add(sample.getArray().get(i + sample_offset).getVY());
 			}
 		}
 		
@@ -65,13 +68,13 @@ public class DataUtils {
 		List<SampleGaussian> list = new ArrayList<SampleGaussian>();
 		for(Sample sample : sampleAll) {
 			List<Double> inputs = new ArrayList<Double>();
-			for(int i = 0;i < sample.getArray().size() - Config.vision_delay_cycle + 1;i++) {
+			for(int i = 0;i < sample.getArray().size() - sample_offset;i++) {
 				inputs.add(MathHelper.getStandardization(sample.getArray().get(i).getParam()[0],avg,std));
 				inputs.add(MathHelper.getStandardization(sample.getArray().get(i).getParam()[1],avg,std));
 				inputs.add(MathHelper.getStandardization(sample.getArray().get(i).getParam()[2],avg,std));
-				inputs.add(MathHelper.getStandardization(sample.getArray().get(i + Config.vision_delay_cycle - 1).getVX(),avg,std));
-				inputs.add(MathHelper.getStandardization(sample.getArray().get(i + Config.vision_delay_cycle - 1).getVY(),avg,std));
-				inputs.add(MathHelper.getStandardization(sample.getArray().get(i + Config.vision_delay_cycle - 1).getOmega(),avg,std));
+				inputs.add(MathHelper.getStandardization(sample.getArray().get(i + sample_offset).getVX(),avg,std));
+				inputs.add(MathHelper.getStandardization(sample.getArray().get(i + sample_offset).getVY(),avg,std));
+				inputs.add(MathHelper.getStandardization(sample.getArray().get(i + sample_offset).getOmega(),avg,std));
 			}
 			list.add(new SampleGaussian(MathHelper.getStandardization(sample.getVX(),avg,std),
 					MathHelper.getStandardization(sample.getVY(),avg,std),
