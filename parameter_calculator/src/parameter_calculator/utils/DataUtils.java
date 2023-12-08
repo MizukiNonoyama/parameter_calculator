@@ -52,12 +52,31 @@ public class DataUtils {
 			allValues.add(sample.getVX());
 			allValues.add(sample.getVY());
 			for(int i = 0;i < sample.getArray().size() - sample_offset;i++) {
-				allValues.add(sample.getArray().get(i).getParam()[0]);
-				allValues.add(sample.getArray().get(i).getParam()[1]);
-				allValues.add(sample.getArray().get(i).getParam()[2]);
-				allValues.add(sample.getArray().get(i + sample_offset).getOmega());
-				allValues.add(sample.getArray().get(i + sample_offset).getVX());
-				allValues.add(sample.getArray().get(i + sample_offset).getVY());
+				for(int j = 0;j < 6;j++) {
+					if(j < 3)
+						allValues.add(sample.get(i, j));
+					else 
+						allValues.add(sample.get(i + sample_offset, j));
+				}
+				if(i < Config.mov_avg_range) {
+					for(int j = 0;j < 6;j++) allValues.add(0.0);
+				}
+				else {
+					for(int j = 0;j < 6;j++) {
+						if(j < 3) {
+							double acc = sample.get(i, j) - sample.get(i - Config.mov_avg_range, j);
+							acc /= (double)Config.mov_avg_range;
+							acc /= Config.cycle_delay;
+							allValues.add(acc);
+						}
+						else {
+							double acc = sample.get(i + sample_offset, j) - sample.get(i + sample_offset - Config.mov_avg_range, j);
+							acc /= (double)Config.mov_avg_range;
+							acc /= Config.cycle_delay;
+							allValues.add(acc);
+						} 	
+					}
+				}
 			}
 		}
 		
@@ -69,16 +88,77 @@ public class DataUtils {
 		for(Sample sample : sampleAll) {
 			List<Double> inputs = new ArrayList<Double>();
 			for(int i = 0;i < sample.getArray().size() - sample_offset;i++) {
-				inputs.add(MathHelper.getStandardization(sample.getArray().get(i).getParam()[0],avg,std));
-				inputs.add(MathHelper.getStandardization(sample.getArray().get(i).getParam()[1],avg,std));
-				inputs.add(MathHelper.getStandardization(sample.getArray().get(i).getParam()[2],avg,std));
-				inputs.add(MathHelper.getStandardization(sample.getArray().get(i + sample_offset).getVX(),avg,std));
-				inputs.add(MathHelper.getStandardization(sample.getArray().get(i + sample_offset).getVY(),avg,std));
-				inputs.add(MathHelper.getStandardization(sample.getArray().get(i + sample_offset).getOmega(),avg,std));
+				for(int j = 0;j < 6;j++) {
+					if(j < 3)
+						inputs.add(MathHelper.getStandardization(sample.get(i, j),avg,std));
+					else 
+						inputs.add(MathHelper.getStandardization(sample.get(i + sample_offset, j),avg,std));
+				}
+				if(i < Config.mov_avg_range) {
+					for(int j = 0;j < 6;j++) inputs.add(MathHelper.getStandardization(0.0,avg,std));
+				}
+				else {
+					for(int j = 0;j < 6;j++) {
+						if(j < 3) {
+							double acc = sample.get(i, j) - sample.get(i - Config.mov_avg_range, j);
+							acc /= (double)Config.mov_avg_range;
+							acc /= Config.cycle_delay;
+							inputs.add(MathHelper.getStandardization(acc,avg,std));
+						}
+						else {
+							double acc = sample.get(i + sample_offset, j) - sample.get(i + sample_offset - Config.mov_avg_range, j);
+							acc /= (double)Config.mov_avg_range;
+							acc /= Config.cycle_delay;
+							inputs.add(MathHelper.getStandardization(acc,avg,std));
+						} 	
+					}
+				}
 			}
 			list.add(new SampleGaussian(MathHelper.getStandardization(sample.getVX(),avg,std),
 					MathHelper.getStandardization(sample.getVY(),avg,std),
 					MathHelper.getStandardization(sample.getOmega(),avg,std),inputs));
+		}
+		
+		return new DataGaussian(list,avg,std);
+	}
+	
+	public static DataGaussian makeGaussian(List<Sample> sampleAll, double avg, double std) {
+		List<SampleGaussian> list = new ArrayList<SampleGaussian>();
+		for(Sample sample : sampleAll) {
+			List<Double> inputs = new ArrayList<Double>();
+			for(int i = 0;i < sample.getArray().size() - sample_offset;i++) {
+				for(int j = 0;j < 6;j++) {
+					if(j < 3) {
+						inputs.add(MathHelper.getStandardization(sample.get(i, j),avg,std));
+					}
+					else 
+						inputs.add(MathHelper.getStandardization(sample.get(i + sample_offset, j),avg,std));
+				}
+				if(i < Config.mov_avg_range) {
+					for(int j = 0;j < 6;j++) inputs.add(MathHelper.getStandardization(0.0,avg,std));
+				}
+				else {
+					for(int j = 0;j < 6;j++) {
+						if(j < 3) {
+							double acc = sample.get(i, j) - sample.get(i - Config.mov_avg_range, j);
+							acc /= (double)Config.mov_avg_range;
+							acc /= Config.cycle_delay;
+							inputs.add(MathHelper.getStandardization(acc,avg,std));
+						}
+						else {
+							double acc = sample.get(i + sample_offset, j) - sample.get(i + sample_offset - Config.mov_avg_range, j);
+							acc /= (double)Config.mov_avg_range;
+							acc /= Config.cycle_delay;
+							inputs.add(MathHelper.getStandardization(acc,avg,std));
+						} 	
+					}
+				}
+			}
+			SampleGaussian sg = new SampleGaussian(MathHelper.getStandardization(sample.getVX(),avg,std),
+					MathHelper.getStandardization(sample.getVY(),avg,std),
+					MathHelper.getStandardization(sample.getOmega(),avg,std),inputs);
+			sg.inputs = sample.getInputValues();
+			list.add(sg);
 		}
 		
 		return new DataGaussian(list,avg,std);

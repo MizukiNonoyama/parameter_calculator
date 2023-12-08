@@ -8,6 +8,7 @@ public class SampleGaussian {
 	private final double vx;
 	private final double vy;
 	private final double omega;
+	public double[] inputs;
 	private List<Double> input;
 	
 	public SampleGaussian(double vx,double vy,double omega,List<Double> list) {

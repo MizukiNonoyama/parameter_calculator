@@ -1,5 +1,6 @@
 package parameter_calculator.neural_network;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -100,7 +101,7 @@ public class Processor {
 			//int i = indexes.get(0);
 			x_error_train.setRow(sampleTrain.get(50).getInput(), 0);
 			t_error_train.setRow(sampleTrain.get(50).getOutput(),0);
-			double error_train = this.getError(x_error_train, t_error_train);
+			double error_train = Math.sqrt(this.getError(x_error_train, t_error_train)) * std;
 			System.out.println("Train : " + error_train);
 			if(!this.gui.getPlot().hasData("Train")) {
 				this.gui.getPlot().setData("Train", new PlotData(new ArrayList<Pair<Double,Double>>(), 0xAA0000, true));
@@ -114,7 +115,7 @@ public class Processor {
 			//int j = MathHelper.RAND.nextInt(sampleTest.size());
 			x_error_test.setRow(sampleTest.get(50).getInput(), 0);
 			t_error_test.setRow(sampleTest.get(50).getOutput(),0);
-			double error_test = this.getError(x_error_test, t_error_test);
+			double error_test = Math.sqrt(this.getError(x_error_test, t_error_test)) * std;
 			System.out.println("Test : " + error_test);
 			if(!this.gui.getPlot().hasData("Test")) {
 				this.gui.getPlot().setData("Test", new PlotData(new ArrayList<Pair<Double,Double>>(), 0x00AA00, true));
@@ -123,6 +124,24 @@ public class Processor {
 			this.gui.getPlot().setMaxX(epoch + 10);
 			this.gui.getPlot().setScaleX((double)(epoch + 10) / 5.0);
 			this.gui.repaint();
+		}
+		
+		List<Sample> samples = new ArrayList<Sample>();
+		samples.addAll(DataUtils.makeSamples(DataUtils.getFilesFromDir("/home/miuzki/robocup/ai-server/build/my_gr/logs/test", ".csv").get(0), ",", 1, 0, 1, 2, 12, 13, 14));
+		DataGaussian dg = DataUtils.makeGaussian(samples, avg, std);
+		for(SampleGaussian sg : dg.getSample()) {
+			String output = "";
+			for(double v : sg.inputs) {
+				output += v + ",";
+			}
+			MatrixDouble md = new MatrixDouble();
+			md.resizeWith(1, Config.data_horizontal_size * Config.data_vertical_size, null);
+			md.setRow(sg.getInput(), 0);
+			MatrixDouble generated = this.forward_propagation(md);
+			for(int j = 0;j < generated.getColumnSize();j++) {
+				output += (generated.get(0, j) * std + avg) + ",";
+			}
+			System.out.println(output);
 		}
 	}
 }

@@ -23,6 +23,11 @@ public class Sample {
 		this.omega = parameters.getOmega();
 	}
 	
+	public double[] getInputValues() {
+		Parameters param = this.input.get(this.input.size() - 1);
+		return new double[] {param.getParam()[0],param.getParam()[1],param.getParam()[2],param.getVX(),param.getVY(),param.getOmega()};
+	}
+	
 	public double getVX() {
 		return this.vx;
 	}
@@ -39,6 +44,17 @@ public class Sample {
 		return this.input;
 	}
 	
+	public int getArraySize() {
+		return this.input.size();
+	}
+	
+	public double get(int array_index, int data_type) {
+		if(data_type < 3) return this.input.get(array_index).getParam()[data_type];
+		else if(data_type == 3) return this.input.get(array_index).getVX();
+		else if(data_type == 4) return this.input.get(array_index).getVY();
+		return this.input.get(array_index).getOmega();
+	}
+	
 	public String toString() {
 		String str = "";
 		for(int i = 0;i < this.input.size();i++) {
@@ -48,5 +64,28 @@ public class Sample {
 			}
 		}
 		return "{ " + this.vx + ", " + this.vy + ", " + this.omega + ", [" + str + "]}";
+	}
+	
+	public static enum Type {
+		COMMAND_VX(0),
+		COMMAND_VY(1),
+		COMMAND_OMEGA(2),
+		ACTUAL_VX(3),
+		ACTUAL_VY(4),
+		ACTUAL_OMEGA(5);
+		
+		private int id;
+		Type(int id) {
+			this.id = id;
+		}
+		
+		public static int getID(Type type) {
+			return type.id;
+		}
+		
+		@SuppressWarnings("static-access")
+		public Type getValue(int id) {
+			return this.values()[id];
+		}
 	}
 }
