@@ -23,7 +23,9 @@ public class Config {
 	public static double ratio_test = 0.25;
 	
 	public static int batch_size = 25;
-	public static int epochs = 4000;
+	public static int epochs = 3000;
+	
+	public static int middle_layer = 2;
 	
 	public static double eta = 0.001;
 	

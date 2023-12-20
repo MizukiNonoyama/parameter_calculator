@@ -1,6 +1,5 @@
 package parameter_calculator.neural_network;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,16 +21,26 @@ import parameter_calculator.utils.Predicates;
 public class Processor {
 	private final BaseLayer[] layers;
 	private final List<Sample> samples;
+	private final DataGaussian data;
 	private final GuiMain gui;
 	
 	public Processor(List<Sample> samples, GuiMain gui) {
-		this.layers = new BaseLayer[] {
+		this.layers = new BaseLayer[Config.middle_layer + 1];
+		this.layers[0] = new MiddleLayer(Config.data_horizontal_size * 
+				Config.data_vertical_size, Config.neuron_middle_size);
+		for(int i = 1;i < Config.middle_layer;i++) {
+			this.layers[i] = new MiddleLayer(Config.neuron_middle_size, Config.neuron_middle_size);
+		}
+		this.layers[Config.middle_layer] = new OutputLayer(Config.neuron_middle_size, Config.neuron_output_size);
+		/*{
 				new MiddleLayer(Config.data_horizontal_size * 
 						Config.data_vertical_size, Config.neuron_middle_size),
 				new MiddleLayer(Config.neuron_middle_size, Config.neuron_middle_size),
 				new OutputLayer(Config.neuron_middle_size, Config.neuron_output_size)
 		};
+		*/
 		this.samples = new ArrayList<Sample>(samples);
+		this.data = DataUtils.makeGaussian(this.samples);
 		this.gui = gui;
 	}
 	
@@ -61,13 +70,39 @@ public class Processor {
 	
 	public double getError(MatrixDouble x, MatrixDouble t) {
 		MatrixDouble y = this.forward_propagation(x);
-		System.out.println(y + " : " + t);
+		//System.out.println(y + " : " + t);
 		return MathHelper.sumAll(y.sum(t.applyAll(Predicates.MINUS)).applyAll(Predicates.SQUARE)) / 2.0;
 	}
 	
+	public List<Double> generateCommand(List<Double> input, double std, double avg, double robot_radius) {
+		List<Double> output = new ArrayList<Double>();
+		MatrixDouble md = new MatrixDouble();
+		if(Config.data_horizontal_size * Config.data_vertical_size != input.size()) {
+			System.out.println("Error1 : input_size{" + input.size() + "}");
+			return output;
+		} 
+		md.resizeWith(1, Config.data_horizontal_size * Config.data_vertical_size, null);
+		md.setRow(input, 0);
+		MatrixDouble generated = this.forward_propagation(md);
+		if(generated.getColumnSize() != 3) {
+			System.out.println("Error2");
+			return output;
+		} 
+		for(int j = 0;j < 3;j++) {
+			output.add(MathHelper.getOrigin(generated.get(0, j),avg,std) / ((j == 2) ? robot_radius : 1.0));
+		}
+		return output;
+	}
+	
+	public double getAvg() {
+		return this.data.getAverage();
+	}
+	
+	public double getStd() {
+		return this.data.getStd();
+	}
+	
 	public void process() {
-		DataGaussian data = DataUtils.makeGaussian(this.samples);
-		double avg = data.getAverage();
 		double std = data.getStd();
 		List<SampleGaussian> sampleTest = new ArrayList<SampleGaussian>(data.getSample().subList(0, (int)(data.getSample().size() * Config.ratio_test)));
 		List<SampleGaussian> sampleTrain = new ArrayList<SampleGaussian>(data.getSample().subList((int)(data.getSample().size() * Config.ratio_test), data.getSample().size()));
@@ -102,7 +137,7 @@ public class Processor {
 			x_error_train.setRow(sampleTrain.get(50).getInput(), 0);
 			t_error_train.setRow(sampleTrain.get(50).getOutput(),0);
 			double error_train = Math.sqrt(this.getError(x_error_train, t_error_train)) * std;
-			System.out.println("Train : " + error_train);
+			//System.out.println("Train : " + error_train);
 			if(!this.gui.getPlot().hasData("Train")) {
 				this.gui.getPlot().setData("Train", new PlotData(new ArrayList<Pair<Double,Double>>(), 0xAA0000, true));
 			}
@@ -116,7 +151,7 @@ public class Processor {
 			x_error_test.setRow(sampleTest.get(50).getInput(), 0);
 			t_error_test.setRow(sampleTest.get(50).getOutput(),0);
 			double error_test = Math.sqrt(this.getError(x_error_test, t_error_test)) * std;
-			System.out.println("Test : " + error_test);
+			//System.out.println("Test : " + error_test);
 			if(!this.gui.getPlot().hasData("Test")) {
 				this.gui.getPlot().setData("Test", new PlotData(new ArrayList<Pair<Double,Double>>(), 0x00AA00, true));
 			}
@@ -126,6 +161,7 @@ public class Processor {
 			this.gui.repaint();
 		}
 		
+		/*
 		List<Sample> samples = new ArrayList<Sample>();
 		samples.addAll(DataUtils.makeSamples(DataUtils.getFilesFromDir("/home/miuzki/robocup/ai-server/build/my_gr/logs/test", ".csv").get(0), ",", 1, 0, 1, 2, 12, 13, 14));
 		DataGaussian dg = DataUtils.makeGaussian(samples, avg, std);
@@ -143,5 +179,6 @@ public class Processor {
 			}
 			System.out.println(output);
 		}
+		*/
 	}
 }

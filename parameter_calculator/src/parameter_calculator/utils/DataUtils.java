@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import parameter_calculator.api.Pair;
@@ -176,6 +177,28 @@ public class DataUtils {
 						list.add(new Parameters(Double.valueOf(splitted[command_vx_index]),Double.valueOf(splitted[command_vy_index]),Double.valueOf(splitted[command_omega_index]) * Config.robot_marker_radius,Double.valueOf(splitted[actual_vx_index]),Double.valueOf(splitted[actual_vy_index]),Double.valueOf(splitted[actual_omega_index]) * Config.robot_marker_radius));
 					} catch(NumberFormatException e) {
 						list.add(null);
+					}
+				}
+				rows++;
+			}
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	public static List<List<Double>> makeRawParamsFromFile(File file, String splitter,int start_row_index,int command_vx_index,int command_vy_index,int command_omega_index,int real_vx_index,int real_vy_index,int real_omega_index) {
+		List<List<Double>> list = new ArrayList<List<Double>>();
+		try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+			String str;
+			int rows = 0;
+			while((str = br.readLine()) != null) {
+				if(start_row_index <= rows) {
+					String[] splitted = str.split(splitter,0);
+					try {
+						list.add(Arrays.asList(Double.valueOf(splitted[command_vx_index]),Double.valueOf(splitted[command_vy_index]),Double.valueOf(splitted[command_omega_index]),Double.valueOf(splitted[real_vx_index]),Double.valueOf(splitted[real_vy_index]),Double.valueOf(splitted[real_omega_index])));
+					} catch(NumberFormatException e) {
+						list.add(Arrays.asList(new Double[] {0.0,0.0,0.0,0.0,0.0,0.0}));
 					}
 				}
 				rows++;
