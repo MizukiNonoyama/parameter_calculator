@@ -15,17 +15,21 @@ public class Config {
 	public static int mov_avg_range = 4;
 	
 	public static int data_vertical_size = sample_cycle;
-	public static int data_horizontal_size = 12;
+	public static final int data_horizontal_size = 12;
 	
 	public static int neuron_middle_size = 16;
 	public static int neuron_output_size = 3;
 	
 	public static double ratio_test = 0.25;
 	
-	public static int batch_size = 25;
+	public static int batch_size = 100;
 	public static int epochs = 3000;
 	
 	public static int middle_layer = 2;
+	
+	public static boolean useAcc = true;
+	
+	public static int readable_line_row = 51;
 	
 	public static double eta = 0.001;
 	

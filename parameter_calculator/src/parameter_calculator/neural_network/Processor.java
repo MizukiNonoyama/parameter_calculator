@@ -117,11 +117,9 @@ public class Processor {
 					Config.data_vertical_size, null);
 				t_md.resizeWith(Config.batch_size, Config.neuron_output_size, null);
 				List<Integer> random_index = new ArrayList<Integer>(indexes.subList(j * Config.batch_size, (j + 1) * Config.batch_size));
-				for(int ri : random_index) {
-					for(int row = 0;row < Config.batch_size;row++) {
-						x_md.setRow(sampleTrain.get(ri).getInput(), row);
-						t_md.setRow(sampleTrain.get(ri).getOutput(),row);
-					}
+				for(int row = 0;row < Config.batch_size;row++) {
+					x_md.setRow(sampleTrain.get(random_index.get(row)).getInput(), row);
+					t_md.setRow(sampleTrain.get(random_index.get(row)).getOutput(),row);
 				}
 				this.forward_propagation(x_md);
 				this.back_propagation(t_md);

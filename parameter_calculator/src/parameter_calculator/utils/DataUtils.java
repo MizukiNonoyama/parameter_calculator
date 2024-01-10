@@ -59,7 +59,7 @@ public class DataUtils {
 					else 
 						allValues.add(sample.get(i + sample_offset, j));
 				}
-				if(i < Config.mov_avg_range) {
+				if(i < Config.mov_avg_range || !Config.useAcc) {
 					for(int j = 0;j < 6;j++) allValues.add(0.0);
 				}
 				else {
@@ -95,7 +95,7 @@ public class DataUtils {
 					else 
 						inputs.add(MathHelper.getStandardization(sample.get(i + sample_offset, j),avg,std));
 				}
-				if(i < Config.mov_avg_range) {
+				if(i < Config.mov_avg_range || !Config.useAcc) {
 					for(int j = 0;j < 6;j++) inputs.add(MathHelper.getStandardization(0.0,avg,std));
 				}
 				else {
@@ -135,7 +135,7 @@ public class DataUtils {
 					else 
 						inputs.add(MathHelper.getStandardization(sample.get(i + sample_offset, j),avg,std));
 				}
-				if(i < Config.mov_avg_range) {
+				if(i < Config.mov_avg_range || !Config.useAcc) {
 					for(int j = 0;j < 6;j++) inputs.add(MathHelper.getStandardization(0.0,avg,std));
 				}
 				else {

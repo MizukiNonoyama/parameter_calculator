@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import parameter_calculator.config.Config;
 import parameter_calculator.neural_network.Processor;
 import parameter_calculator.utils.MathHelper;
 
@@ -68,7 +69,7 @@ public class Prototype {
 		for(int i = 0;i < this.buffer.size();i++) {
 			List<Double> low = new ArrayList<Double>();
 			low.addAll(this.buffer.get(i));
-			if(i < this.mov_avg_range) {
+			if(i < this.mov_avg_range || !Config.useAcc) {
 				low.addAll(Arrays.asList(new Double[] {0.0,0.0,0.0,0.0,0.0,0.0}));
 			}
 			else {

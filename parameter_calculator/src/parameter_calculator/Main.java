@@ -21,12 +21,12 @@ public class Main {
 		win.setVisible(true);
 		win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		List<Sample> samples = new ArrayList<Sample>();
-		for(File file : DataUtils.getFilesFromDir("/home/miuzki/robocup/ai-server/build/my_gr/logs/measurement", ".csv")) samples.addAll(DataUtils.makeSamples(file, ",", 1, 0, 1, 2, 12, 13, 14));
+		for(File file : DataUtils.getFilesFromDir("/home/miuzki/robocup/ai-server/build/my_gr/logs/measurement20231221", ".csv")) samples.addAll(DataUtils.makeSamples(file, ",", Config.readable_line_row, 0, 1, 2, 12, 13, 14));
 		Processor pro = new Processor(samples, win);
 		pro.process();
 		
 		Prototype p = new Prototype(pro, Config.data_vertical_size, Config.vision_delay_cycle, Config.mov_avg_range, Config.cycle_delay, Config.robot_marker_radius);
-		List<List<Double>> list = DataUtils.makeRawParamsFromFile(DataUtils.getFilesFromDir("/home/miuzki/robocup/ai-server/build/my_gr/logs/test", ".csv").get(0), ",", 1, 0, 1, 2, 12, 13, 14);
+		List<List<Double>> list = DataUtils.makeRawParamsFromFile(DataUtils.getFilesFromDir("/home/miuzki/robocup/ai-server/build/my_gr/logs/test", ".csv").get(0), ",", Config.readable_line_row, 0, 1, 2, 12, 13, 14);
 
 		try {
 			String name = "log.csv";
