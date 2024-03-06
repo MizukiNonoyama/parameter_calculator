@@ -66,6 +66,20 @@ public class Predicates {
 		}	
 	};
 	
+	public static final Predicate<Double> X = new Predicate<Double>() {
+		@Override
+		public Double apply(Double value) {
+			return value;
+		}	
+	};
+	
+	public static final Predicate<Double> X_GRAD = new Predicate<Double>() {
+		@Override
+		public Double apply(Double value) {
+			return 1.0;
+		}	
+	};
+	
 	public static final Predicate<Double> LN = new Predicate<Double>() {
 		@Override
 		public Double apply(Double value) {

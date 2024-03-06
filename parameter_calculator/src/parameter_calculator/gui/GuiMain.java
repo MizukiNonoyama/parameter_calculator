@@ -8,10 +8,10 @@ import parameter_calculator.gui.plot.PanelString;
 @SuppressWarnings("serial")
 public class GuiMain extends JFrame {
 	
-	private PanelString string = new PanelString("Epoch-Error", 500, 550, 2);
+	private PanelString string = new PanelString("Epoch-Error", 1100, 620, 2);
 	private PanelPlot plot = new PanelPlot(string, 
 			GuiConfig.min_plot_x, GuiConfig.min_plot_y, GuiConfig.max_plot_x, GuiConfig.max_plot_y, 
-			GuiConfig.scale_x, GuiConfig.scale_y, GuiConfig.scale_x_small, GuiConfig.scale_y_small, 70, 70, 500, 500);
+			GuiConfig.scale_x, GuiConfig.scale_y, GuiConfig.scale_x_small, GuiConfig.scale_y_small, 150, 70, 1000, 560);
 	
 	public GuiMain(String title, int sizeX, int sizeY) {
 		this.setSize(sizeX, sizeY);

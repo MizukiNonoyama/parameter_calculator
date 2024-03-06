@@ -1,6 +1,7 @@
 package parameter_calculator.gui.plot;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Map.Entry;
 import javax.swing.JPanel;
 
 import parameter_calculator.api.Pair;
+import parameter_calculator.gui.GuiConfig;
 import parameter_calculator.gui.util.MathHelper;
 import parameter_calculator.gui.util.PlotData;
 import parameter_calculator.gui.util.PlotField;
@@ -114,6 +116,7 @@ public class PanelPlot extends JPanel {
 	
 	private void drawAxis(Graphics g, PlotField pf) {
 		//Axis X
+		g.setFont(GuiConfig.FONT);
 		if(min_y < 0 && max_y > 0) {
 			int y0 = pf.getY(0);
 			String axis = "x";
@@ -128,7 +131,7 @@ public class PanelPlot extends JPanel {
 					if(i != 0) { 
 						g.drawLine(pf.getX(scaleX), y0 - 5, pf.getX(scaleX), y0 + 5);
 						String s = String.format("%.1f",scaleX);
-						g.drawChars(s.toCharArray(), 0, s.length(), pf.getX(scaleX) - g.getFontMetrics().stringWidth(s) / 2, y0 + 15);
+						g.drawChars(s.toCharArray(), 0, s.length(), pf.getX(scaleX) - g.getFontMetrics().stringWidth(s) / 2, y0 + 32);
 					}
 					
 					if((scaleX + scale_x) > this.max_x) continue;
@@ -176,7 +179,7 @@ public class PanelPlot extends JPanel {
 					if(i != 0) { 
 						g.drawLine(x0 - 5, pf.getY(scaleY), x0 + 5, pf.getY(scaleY));
 						String s = String.valueOf(scaleY);
-						g.drawChars(s.toCharArray(), 0, s.length(), x0 - g.getFontMetrics().stringWidth(s) / 2 - 16, pf.getY(scaleY) + 5);
+						g.drawChars(s.toCharArray(), 0, s.length(), x0 - g.getFontMetrics().stringWidth(s) - 10, pf.getY(scaleY) + 10);
 					}
 					
 					if((scaleY + scale_y) > this.max_y) continue;
@@ -215,7 +218,7 @@ public class PanelPlot extends JPanel {
 			int x0 = pf.getX(0);
 	        int y0 = pf.getY(0);
 	        String s = "0";
-			g.drawChars(s.toCharArray(), 0, s.length(), x0 - 10, y0 + 15);
+			g.drawChars(s.toCharArray(), 0, s.length(), x0 - g.getFontMetrics().stringWidth(s) - 10, y0 + 32);
 		}
 	}
 }

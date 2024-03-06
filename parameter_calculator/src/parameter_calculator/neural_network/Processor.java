@@ -106,6 +106,8 @@ public class Processor {
 		double std = data.getStd();
 		List<SampleGaussian> sampleTest = new ArrayList<SampleGaussian>(data.getSample().subList(0, (int)(data.getSample().size() * Config.ratio_test)));
 		List<SampleGaussian> sampleTrain = new ArrayList<SampleGaussian>(data.getSample().subList((int)(data.getSample().size() * Config.ratio_test), data.getSample().size()));
+		//for(int index = 0;index < sampleTrain.size();index++) System.out.println(index + " : " + sampleTrain.get(index).getOutput());
+		System.out.println("Sample Size : " + sampleTrain.size() + ", Std : " + std + ", Avg : " + data.getAverage());
 		int loop_times = sampleTrain.size() / Config.batch_size;
 		List<Integer> indexes = MathHelper.makeIntList(sampleTrain.size());
 		for(int epoch = 0;epoch < Config.epochs;epoch++) {
@@ -127,56 +129,44 @@ public class Processor {
 				this.update_params(epoch + 1);
 			}
 			
-			MatrixDouble x_error_train = new MatrixDouble();
-			MatrixDouble t_error_train = new MatrixDouble();
-			x_error_train.resizeWith(1, Config.data_horizontal_size * Config.data_vertical_size, null);
-			t_error_train.resizeWith(1, Config.neuron_output_size, null);
-			//int i = indexes.get(0);
-			x_error_train.setRow(sampleTrain.get(50).getInput(), 0);
-			t_error_train.setRow(sampleTrain.get(50).getOutput(),0);
-			double error_train = Math.sqrt(this.getError(x_error_train, t_error_train)) * std;
-			//System.out.println("Train : " + error_train);
+			double error_train = this.getErrorFromSample(sampleTrain, (Config.useAvg) ? -1 : 18011, std); //18011,62111
 			if(!this.gui.getPlot().hasData("Train")) {
-				this.gui.getPlot().setData("Train", new PlotData(new ArrayList<Pair<Double,Double>>(), 0xAA0000, true));
+				this.gui.getPlot().setData("Train", new PlotData(new ArrayList<Pair<Double,Double>>(), 0xFF4B00, true));
 			}
 			this.gui.getPlot().getData("Train").getData().add(new Pair<Double,Double>((double)(epoch + 1), error_train));
 			
-			MatrixDouble x_error_test = new MatrixDouble();
-			MatrixDouble t_error_test = new MatrixDouble();
-			x_error_test.resizeWith(1, Config.data_horizontal_size * Config.data_vertical_size, null);
-			t_error_test.resizeWith(1, Config.neuron_output_size, null);
-			//int j = MathHelper.RAND.nextInt(sampleTest.size());
-			x_error_test.setRow(sampleTest.get(50).getInput(), 0);
-			t_error_test.setRow(sampleTest.get(50).getOutput(),0);
-			double error_test = Math.sqrt(this.getError(x_error_test, t_error_test)) * std;
-			//System.out.println("Test : " + error_test);
+			double error_test = this.getErrorFromSample(sampleTest, (Config.useAvg) ? -1 : 30, std);
 			if(!this.gui.getPlot().hasData("Test")) {
-				this.gui.getPlot().setData("Test", new PlotData(new ArrayList<Pair<Double,Double>>(), 0x00AA00, true));
+				this.gui.getPlot().setData("Test", new PlotData(new ArrayList<Pair<Double,Double>>(), 0x03AF7A, true));
 			}
 			this.gui.getPlot().getData("Test").getData().add(new Pair<Double,Double>((double)(epoch + 1), error_test));
 			this.gui.getPlot().setMaxX(epoch + 10);
 			this.gui.getPlot().setScaleX((double)(epoch + 10) / 5.0);
 			this.gui.repaint();
 		}
+	}
+	
+	public double getErrorFromSample(List<SampleGaussian> samples, int index, double std) {
+		MatrixDouble x_error = new MatrixDouble();
+		MatrixDouble t_error = new MatrixDouble();
+		x_error.resizeWith(1, Config.data_horizontal_size * Config.data_vertical_size, null);
+		t_error.resizeWith(1, Config.neuron_output_size, null);
 		
-		/*
-		List<Sample> samples = new ArrayList<Sample>();
-		samples.addAll(DataUtils.makeSamples(DataUtils.getFilesFromDir("/home/miuzki/robocup/ai-server/build/my_gr/logs/test", ".csv").get(0), ",", 1, 0, 1, 2, 12, 13, 14));
-		DataGaussian dg = DataUtils.makeGaussian(samples, avg, std);
-		for(SampleGaussian sg : dg.getSample()) {
-			String output = "";
-			for(double v : sg.inputs) {
-				output += v + ",";
-			}
-			MatrixDouble md = new MatrixDouble();
-			md.resizeWith(1, Config.data_horizontal_size * Config.data_vertical_size, null);
-			md.setRow(sg.getInput(), 0);
-			MatrixDouble generated = this.forward_propagation(md);
-			for(int j = 0;j < generated.getColumnSize();j++) {
-				output += (generated.get(0, j) * std + avg) + ",";
-			}
-			System.out.println(output);
+		double error = 0;
+		if(index > 0) {
+			x_error.setRow(samples.get(index).getInput(), 0);
+			t_error.setRow(samples.get(index).getOutput(),0);
+			System.out.println(t_error + " | " + this.forward_propagation(x_error));
+			error = Math.sqrt(this.getError(x_error, t_error)) * std;
 		}
-		*/
+		else {
+			for(int i = 0;i < samples.size();i++) {
+				x_error.setRow(samples.get(i).getInput(), 0);
+				t_error.setRow(samples.get(i).getOutput(),0);
+				error += Math.sqrt(this.getError(x_error, t_error)) * std;
+			}
+			error /= samples.size();
+		}
+		return error;
 	}
 }

@@ -17,7 +17,7 @@ import parameter_calculator.utils.DataUtils;
 
 public class Main {
 	public static void main(String[] args) {
-		GuiMain win = new GuiMain("Graph",640,640);
+		GuiMain win = new GuiMain("Graph",1280,720);
 		win.setVisible(true);
 		win.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		List<Sample> samples = new ArrayList<Sample>();
@@ -34,6 +34,28 @@ public class Main {
 			
 			for(List<Double> input : list) {
 				p.read_test(new double[] {input.get(0),input.get(1),input.get(2)});
+				List<Double> output = new ArrayList<Double>();
+				output.addAll(input);
+				output.addAll(p.generate());
+				String s = "";
+				for(double d : output) {
+					s += d + ",";
+				}
+				bw.write(s + "\n");
+			}
+			
+			bw.close();
+		}
+		catch (IOException e) {
+			System.out.println("Error with writer");
+		}
+		
+		try {
+			String name = "log2.csv";
+			BufferedWriter bw = new BufferedWriter(new FileWriter(name));
+			
+			for(List<Double> input : list) {
+				p.read(new double[] {input.get(0),input.get(1),input.get(2),input.get(3),input.get(4),input.get(5)});
 				List<Double> output = new ArrayList<Double>();
 				output.addAll(input);
 				output.addAll(p.generate());

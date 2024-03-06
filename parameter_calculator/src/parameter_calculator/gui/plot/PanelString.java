@@ -4,6 +4,8 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
+import parameter_calculator.gui.GuiConfig;
+
 @SuppressWarnings("serial")
 public class PanelString extends JPanel {
 	private String s;
@@ -30,6 +32,7 @@ public class PanelString extends JPanel {
 	@Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        g.setFont(GuiConfig.FONT);
         int true_x;
         if(type == 2) {
         	true_x = x - g.getFontMetrics().stringWidth(s) / 2;
